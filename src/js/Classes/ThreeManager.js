@@ -2,7 +2,16 @@ import { GUI } from 'dat.gui';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { EXRLoader, OrbitControls } from 'three/addons';
-import { ACESFilmicToneMapping, Clock, PCFSoftShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import {
+	ACESFilmicToneMapping,
+	Clock,
+	DefaultLoadingManager,
+	PCFSoftShadowMap,
+	PerspectiveCamera,
+	Scene,
+	WebGLRenderer
+} from 'three';
+import { ref } from 'vue';
 
 export default class ThreeManager {
 	constructor() {
@@ -14,10 +23,12 @@ export default class ThreeManager {
 		this.renderAction = null;
 		this.gui = null;
 		this.debugObject = {};
+		this.isSceneReady = ref(false);
 		this.EXRLoader = new EXRLoader();
 		this.clock = new Clock();
 		this.gltfLoader = new GLTFLoader();
 		this.dracoLoader = new DRACOLoader();
+		this.loaderManager = DefaultLoadingManager;
 		this.gltfLoader.setDRACOLoader(this.dracoLoader);
 	}
 
@@ -52,6 +63,9 @@ export default class ThreeManager {
 
 		// Set scene size
 		this.setSceneSize();
+
+		// Handle scene loading
+		this.handleSceneLoading();
 	}
 
 	setupCamera() {
@@ -96,6 +110,20 @@ export default class ThreeManager {
 
 		// Set canvas size again
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
+	}
+
+	handleSceneLoading() {
+		// On load
+		this.loaderManager.onLoad = () => {
+			// Set ready state
+			this.isSceneReady.value = true;
+		};
+
+		// On progress
+		this.loaderManager.onProgress = (itemUrl, itemsLoaded, itemsTotal) => {
+			// Calculate the progress and update the loadingBarElement
+			// const progressRatio = (itemsLoaded / itemsTotal) * 100;
+		};
 	}
 
 	animate() {

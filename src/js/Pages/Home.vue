@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from 'vue';
 import Scene from '@js/Classes/Scene.js';
+import Loader from '../Components/Loader.vue';
 
 // Life cycles
 onMounted(() => {
@@ -22,6 +23,10 @@ onBeforeUnmount(() => {
 
 <template>
 	<div class="flex h-[100dvh] w-screen items-stretch justify-center">
+		<Transition name="fade" mode="out-in">
+			<Loader v-if="!Scene.isSceneReady.value" />
+		</Transition>
+
 		<canvas id="scene-canvas" class="absolute inset-0 z-0 h-full w-full" />
 	</div>
 </template>
