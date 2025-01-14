@@ -13,6 +13,7 @@ export default class ThreeManager {
 		this.controls = null;
 		this.renderAction = null;
 		this.gui = null;
+		this.debugObject = {};
 		this.clock = new Clock();
 		this.gltfLoader = new GLTFLoader();
 		this.dracoLoader = new DRACOLoader();
@@ -79,6 +80,12 @@ export default class ThreeManager {
 
 		// Create instance of dat.gui
 		this.gui = new GUI({ width: 340 });
+	}
+
+	addDebugControls(callback) {
+		if (callback) {
+			callback();
+		}
 	}
 
 	setSceneSize() {
