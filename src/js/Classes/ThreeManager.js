@@ -1,7 +1,7 @@
 import { GUI } from 'dat.gui';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { OrbitControls } from 'three/addons';
+import { EXRLoader, OrbitControls } from 'three/addons';
 import { ACESFilmicToneMapping, Clock, PCFSoftShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 
 export default class ThreeManager {
@@ -14,6 +14,7 @@ export default class ThreeManager {
 		this.renderAction = null;
 		this.gui = null;
 		this.debugObject = {};
+		this.EXRLoader = new EXRLoader();
 		this.clock = new Clock();
 		this.gltfLoader = new GLTFLoader();
 		this.dracoLoader = new DRACOLoader();

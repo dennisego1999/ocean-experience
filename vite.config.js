@@ -8,7 +8,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@js': '/src/js',
-			'@shaders': '/src/shaders'
+			'@shaders': '/src/shaders',
+			'@assets': '/src/assets'
 		}
 	}
 });

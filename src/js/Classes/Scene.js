@@ -1,4 +1,13 @@
-import { Color, DoubleSide, Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector2 } from 'three';
+import {
+	Color,
+	DoubleSide,
+	EquirectangularReflectionMapping,
+	Mesh,
+	PlaneGeometry,
+	ShaderMaterial,
+	Uniform,
+	Vector2
+} from 'three';
 import ThreeManager from '@js/Classes/ThreeManager.js';
 import oceanVertexShader from '@shaders/Ocean/Vertex.glsl';
 import oceanFragmentShader from '@shaders/Ocean/Fragment.glsl';
@@ -147,7 +156,16 @@ class Scene extends ThreeManager {
 		this.scene.add(ocean);
 	}
 
-	addSky() {}
+	addSky() {
+		// Load the sky file
+		this.EXRLoader.load('/assets/images/sky.exr', (texture) => {
+			// Set texture mapping
+			texture.mapping = EquirectangularReflectionMapping;
+
+			// Set scene background
+			this.scene.background = texture;
+		});
+	}
 }
 
 export default new Scene();
