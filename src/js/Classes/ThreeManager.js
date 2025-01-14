@@ -1,4 +1,5 @@
 import { GUI } from 'dat.gui';
+import { ref } from 'vue';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { EXRLoader, OrbitControls } from 'three/addons';
@@ -11,7 +12,6 @@ import {
 	Scene,
 	WebGLRenderer
 } from 'three';
-import { ref } from 'vue';
 
 export default class ThreeManager {
 	constructor() {

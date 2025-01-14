@@ -1,7 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from 'vue';
 import Scene from '@js/Classes/Scene.js';
-import Loader from '../Components/Loader.vue';
+import Loader from '@js/Components/Loader.vue';
 
 // Life cycles
 onMounted(() => {
