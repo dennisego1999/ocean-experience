@@ -1,7 +1,7 @@
 import { Color, Mesh, PlaneGeometry, ShaderMaterial, Uniform } from 'three';
 import ThreeManager from '@js/Classes/ThreeManager.js';
-import oceanFloorVertexShader from '@shaders/OceanFloar/vertex.glsl';
-import oceanFloorFragmentShader from '@shaders/OceanFloar/fragment.glsl';
+import oceanFloorVertexShader from '@shaders/OceanFloor/vertex.glsl';
+import oceanFloorFragmentShader from '@shaders/OceanFloor/fragment.glsl';
 
 class Scene extends ThreeManager {
 	constructor() {

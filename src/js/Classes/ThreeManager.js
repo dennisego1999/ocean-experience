@@ -1,7 +1,8 @@
+import { GUI } from 'dat.gui';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { ACESFilmicToneMapping, Clock, PCFSoftShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/addons';
+import { ACESFilmicToneMapping, Clock, PCFSoftShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 
 export default class ThreeManager {
 	constructor() {
@@ -11,6 +12,7 @@ export default class ThreeManager {
 		this.canvas = null;
 		this.controls = null;
 		this.renderAction = null;
+		this.gui = null;
 		this.clock = new Clock();
 		this.gltfLoader = new GLTFLoader();
 		this.dracoLoader = new DRACOLoader();
@@ -43,6 +45,9 @@ export default class ThreeManager {
 		// Setup controls
 		this.setupControls();
 
+		// Setup debugging
+		this.setupDebugging();
+
 		// Set scene size
 		this.setSceneSize();
 	}
@@ -64,6 +69,16 @@ export default class ThreeManager {
 	setupControls() {
 		// Set controls
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+	}
+
+	setupDebugging() {
+		if (import.meta.env.VITE_APP_ENV === 'production') {
+			// Only allow debugging in non-production environments
+			return;
+		}
+
+		// Create instance of dat.gui
+		this.gui = new GUI({ width: 340 });
 	}
 
 	setSceneSize() {
