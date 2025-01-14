@@ -73,7 +73,7 @@ export default class ThreeManager {
 	}
 
 	setupDebugging() {
-		if (import.meta.env.VITE_APP_ENV === 'production') {
+		if (import.meta.env.VITE_ENABLE_DEBUG === 'false') {
 			// Only allow debugging in non-production environments
 			return;
 		}

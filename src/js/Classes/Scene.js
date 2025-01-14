@@ -8,6 +8,10 @@ class Scene extends ThreeManager {
 		super();
 
 		this.oceanMaterial = null;
+		this.config = {
+			depthColor: '#186691',
+			surfaceColor: '#9bd8ff'
+		};
 	}
 
 	init(canvasId) {
@@ -28,14 +32,12 @@ class Scene extends ThreeManager {
 	}
 
 	setupScene() {
+		// Set up the scene
 		this.addOcean();
+		this.addSky();
 	}
 
 	addOcean() {
-		// Add colors
-		this.debugObject.depthColor = '#186691';
-		this.debugObject.surfaceColor = '#9bd8ff';
-
 		// Creat ocean shader material
 		this.oceanMaterial = new ShaderMaterial({
 			vertexShader: oceanVertexShader,
@@ -52,80 +54,82 @@ class Scene extends ThreeManager {
 				uSmallWavesSpeed: new Uniform(0.2),
 				uSmallIterations: new Uniform(4.0),
 
-				uDepthColor: new Uniform(new Color(this.debugObject.depthColor)),
-				uSurfaceColor: new Uniform(new Color(this.debugObject.surfaceColor)),
+				uDepthColor: new Uniform(new Color(this.config.depthColor)),
+				uSurfaceColor: new Uniform(new Color(this.config.surfaceColor)),
 				uColorOffset: new Uniform(0.12),
 				uColorMultiplier: new Uniform(2.1)
 			},
 			side: DoubleSide
 		});
 
-		// Add debug controls
-		this.addDebugControls(() => {
-			this.gui
-				.add(this.oceanMaterial.uniforms.uBigWavesElevation, 'value')
-				.min(0)
-				.max(1)
-				.step(0.001)
-				.name('uBigWavesElevation');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uBigWavesFrequency.value, 'x')
-				.min(0)
-				.max(10)
-				.step(0.001)
-				.name('uBigWavesFrequencyX');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uBigWavesFrequency.value, 'y')
-				.min(0)
-				.max(10)
-				.step(0.001)
-				.name('uBigWavesFrequencyY');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uBigWavesSpeed, 'value')
-				.min(0)
-				.max(4)
-				.step(0.001)
-				.name('uBigWavesSpeed');
+		if (import.meta.env.VITE_ENABLE_DEBUG === 'true') {
+			// Add debug controls
+			this.addDebugControls(() => {
+				this.gui
+					.add(this.oceanMaterial.uniforms.uBigWavesElevation, 'value')
+					.min(0)
+					.max(1)
+					.step(0.001)
+					.name('uBigWavesElevation');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uBigWavesFrequency.value, 'x')
+					.min(0)
+					.max(10)
+					.step(0.001)
+					.name('uBigWavesFrequencyX');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uBigWavesFrequency.value, 'y')
+					.min(0)
+					.max(10)
+					.step(0.001)
+					.name('uBigWavesFrequencyY');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uBigWavesSpeed, 'value')
+					.min(0)
+					.max(4)
+					.step(0.001)
+					.name('uBigWavesSpeed');
 
-			this.gui
-				.add(this.oceanMaterial.uniforms.uSmallWavesElevation, 'value')
-				.min(0)
-				.max(1)
-				.step(0.001)
-				.name('uSmallWavesElevation');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uSmallWavesFrequency, 'value')
-				.min(0)
-				.max(30)
-				.step(0.001)
-				.name('uSmallWavesFrequency');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uSmallWavesSpeed, 'value')
-				.min(0)
-				.max(4)
-				.step(0.001)
-				.name('uSmallWavesSpeed');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uSmallIterations, 'value')
-				.min(0)
-				.max(5)
-				.step(1)
-				.name('uSmallIterations');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uSmallWavesElevation, 'value')
+					.min(0)
+					.max(1)
+					.step(0.001)
+					.name('uSmallWavesElevation');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uSmallWavesFrequency, 'value')
+					.min(0)
+					.max(30)
+					.step(0.001)
+					.name('uSmallWavesFrequency');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uSmallWavesSpeed, 'value')
+					.min(0)
+					.max(4)
+					.step(0.001)
+					.name('uSmallWavesSpeed');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uSmallIterations, 'value')
+					.min(0)
+					.max(5)
+					.step(1)
+					.name('uSmallIterations');
 
-			this.gui.addColor(this.debugObject, 'depthColor').onChange(() => {
-				this.oceanMaterial.uniforms.uDepthColor.value.set(this.debugObject.depthColor);
+				this.gui.addColor(this.config, 'depthColor').onChange(() => {
+					this.oceanMaterial.uniforms.uDepthColor.value.set(this.config.depthColor);
+				});
+				this.gui.addColor(this.config, 'surfaceColor').onChange(() => {
+					this.oceanMaterial.uniforms.uSurfaceColor.value.set(this.config.surfaceColor);
+				});
+				this.gui.add(this.oceanMaterial.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('uColorOffset');
+				this.gui
+					.add(this.oceanMaterial.uniforms.uColorMultiplier, 'value')
+					.min(0)
+					.max(10)
+					.step(0.001)
+					.name('uColorMultiplier');
 			});
-			this.gui.addColor(this.debugObject, 'surfaceColor').onChange(() => {
-				this.oceanMaterial.uniforms.uSurfaceColor.value.set(this.debugObject.surfaceColor);
-			});
-			this.gui.add(this.oceanMaterial.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('uColorOffset');
-			this.gui
-				.add(this.oceanMaterial.uniforms.uColorMultiplier, 'value')
-				.min(0)
-				.max(10)
-				.step(0.001)
-				.name('uColorMultiplier');
-		});
+		}
 
 		// Create ocean geometry
 		const oceanGeometry = new PlaneGeometry(50, 50, 512, 512);
@@ -142,6 +146,8 @@ class Scene extends ThreeManager {
 		// Add to scene
 		this.scene.add(ocean);
 	}
+
+	addSky() {}
 }
 
 export default new Scene();
