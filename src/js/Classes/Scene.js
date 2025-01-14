@@ -1,8 +1,13 @@
-import ThreeManager from '@/Classes/ThreeManager.js';
+import { Color, Mesh, PlaneGeometry, ShaderMaterial, Uniform } from 'three';
+import ThreeManager from '@js/Classes/ThreeManager.js';
+import oceanFloorVertexShader from '@shaders/Ocean/vertex.glsl';
+import oceanFloorFragmentShader from '@shaders/Ocean/fragment.glsl';
 
 class Scene extends ThreeManager {
 	constructor() {
 		super();
+
+		this.oceanFloorMaterial = null;
 	}
 
 	init(canvasId) {
@@ -14,14 +19,41 @@ class Scene extends ThreeManager {
 
 		// Set render action
 		this.setRenderAction(() => {
-			// TODO: add render action here
+			// Update the uniform time variable of shader
+			this.oceanFloorMaterial.uniforms.uTime.value = this.clock.getElapsedTime();
 		});
 
 		// Start animation loop
 		this.animate();
 	}
 
-	setupScene() {}
+	setupScene() {
+		this.addOceanFloor();
+	}
+
+	addOceanFloor() {
+		// Creat ocean shader material
+		this.oceanFloorMaterial = new ShaderMaterial({
+			vertexShader: oceanFloorVertexShader,
+			fragmentShader: oceanFloorFragmentShader,
+			uniforms: {
+				uTime: new Uniform(0),
+				uColor: new Uniform(new Color('#004488'))
+			}
+		});
+
+		// Create ocean floor geometry
+		const oceanFloorGeometry = new PlaneGeometry(50, 50, 50, 50);
+
+		// Create ocean floor mesh
+		const oceanFloor = new Mesh(oceanFloorGeometry, this.oceanFloorMaterial);
+
+		// Adjust ocean floor
+		oceanFloor.rotation.x = -Math.PI / 2;
+
+		// Add to scene
+		this.scene.add(oceanFloor);
+	}
 }
 
 export default new Scene();
