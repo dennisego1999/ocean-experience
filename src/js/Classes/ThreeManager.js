@@ -1,8 +1,8 @@
 import { GUI } from 'dat.gui';
 import { ref } from 'vue';
+import { EXRLoader } from 'three/addons';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { EXRLoader, OrbitControls } from 'three/addons';
 import {
 	ACESFilmicToneMapping,
 	Clock,
@@ -12,6 +12,7 @@ import {
 	Scene,
 	WebGLRenderer
 } from 'three';
+import Controls from '@js/Classes/Controls.js';
 
 export default class ThreeManager {
 	constructor() {
@@ -84,7 +85,10 @@ export default class ThreeManager {
 
 	setupControls() {
 		// Set controls
-		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+		this.controls = new Controls(this.camera, this.renderer.domElement);
+
+		// Bind controls events
+		this.controls.bind();
 	}
 
 	setupDebugging() {
@@ -145,6 +149,11 @@ export default class ThreeManager {
 		// Get delta
 		const delta = this.clock.getDelta();
 
+		if (this.controls) {
+			// Update controls
+			this.controls.update();
+		}
+
 		if (this.renderAction) {
 			// Call render action
 			this.renderAction(delta);
@@ -155,6 +164,9 @@ export default class ThreeManager {
 	}
 
 	destroy() {
+		// Unbind controls events
+		this.controls.unbind();
+
 		// Cancel the animation frame
 		if (this.animateFrameId) {
 			cancelAnimationFrame(this.animateFrameId);
