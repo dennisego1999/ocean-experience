@@ -8,7 +8,6 @@ class Controls {
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
 		this.center = new Vector3();
-		this.radius = camera.position.distanceTo(this.center);
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
