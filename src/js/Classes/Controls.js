@@ -8,7 +8,8 @@ class Controls {
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
 		this.lookSpeedFactor = 5;
-		this.isScrolling = false;
+		this.maxScroll = 5;
+		this.minScroll = -10;
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
@@ -37,7 +38,10 @@ class Controls {
 
 		// Attach camera y-axis to scroll
 		const delta = Math.sign(event.deltaY);
-		this.camera.position.y += delta * 0.1;
+		this.camera.position.y += delta * 0.05;
+
+		// Clamp the camera position between border values
+		this.camera.position.y = Math.max(this.minScroll, Math.min(this.maxScroll, this.camera.position.y));
 	}
 
 	update() {
@@ -51,6 +55,8 @@ class Controls {
 			this.currentMouseCoords.y * this.lookSpeedFactor,
 			0
 		);
+
+		// Look at target position
 		this.camera.lookAt(lookAtPosition);
 	}
 }
