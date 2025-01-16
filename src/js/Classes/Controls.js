@@ -7,6 +7,8 @@ class Controls {
 		this.domElement = domElement || document.body;
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
+		this.center = new Vector3();
+		this.radius = camera.position.distanceTo(this.center);
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
@@ -27,14 +29,15 @@ class Controls {
 	}
 
 	update() {
-		// Lerp
+		// Smoothly interpolate mouse coordinates
 		this.currentMouseCoords.x = lerp(this.currentMouseCoords.x, this.targetMouseCoords.x, 0.05);
 		this.currentMouseCoords.y = lerp(this.currentMouseCoords.y, this.targetMouseCoords.y, 0.05);
 
-		// Update camera look direction
-		const lookAtPosition = new Vector3(this.currentMouseCoords.x, this.currentMouseCoords.y, 0);
+		// Calculate new lookAt position relative to the center
+		const lookAtOffset = new Vector3(this.currentMouseCoords.x, this.currentMouseCoords.y, 0);
 
-		// Look at position
+		// Update camera look direction
+		const lookAtPosition = new Vector3().addVectors(this.center, lookAtOffset);
 		this.camera.lookAt(lookAtPosition);
 	}
 }
