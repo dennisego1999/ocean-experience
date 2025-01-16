@@ -32,11 +32,7 @@ class Controls {
 		this.currentMouseCoords.y = lerp(this.currentMouseCoords.y, this.targetMouseCoords.y, 0.05);
 
 		// Update camera look direction
-		const lookAtPosition = new Vector3(
-			this.currentMouseCoords.x * 10, // Scale the x-axis sensitivity
-			this.currentMouseCoords.y * 10, // Scale the y-axis sensitivity
-			0 // Keep the z-axis constant for simplicity
-		);
+		const lookAtPosition = new Vector3(this.currentMouseCoords.x, this.currentMouseCoords.y, 0);
 
 		// Look at position
 		this.camera.lookAt(lookAtPosition);

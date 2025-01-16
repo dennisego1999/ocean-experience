@@ -71,7 +71,7 @@ export default class ThreeManager {
 
 	setupCamera() {
 		// Set perspective camera
-		this.camera = new PerspectiveCamera(35, this.canvas.offsetWidth / this.canvas.offsetHeight, 0.1, 1000);
+		this.camera = new PerspectiveCamera(50, this.canvas.offsetWidth / this.canvas.offsetHeight, 0.1, 1000);
 
 		// Set camera position
 		this.camera.position.set(0, 1, -10);

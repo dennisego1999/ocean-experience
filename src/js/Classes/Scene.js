@@ -141,16 +141,13 @@ class Scene extends ThreeManager {
 		}
 
 		// Create ocean geometry
-		const oceanGeometry = new PlaneGeometry(50, 50, 512, 512);
+		const oceanGeometry = new PlaneGeometry(150, 150, 512, 512);
 
 		// Create ocean mesh
 		const ocean = new Mesh(oceanGeometry, this.oceanMaterial);
 
 		// Adjust ocean
 		ocean.rotation.x = -Math.PI / 2;
-
-		// Scale to cover the full screen
-		ocean.scale.set(window.innerWidth / window.innerHeight, 1, 1);
 
 		// Add to scene
 		this.scene.add(ocean);
