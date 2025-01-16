@@ -9,8 +9,8 @@ import {
 	Vector2
 } from 'three';
 import ThreeManager from '@js/Classes/ThreeManager.js';
-import oceanVertexShader from '@shaders/Ocean/Vertex.glsl';
-import oceanFragmentShader from '@shaders/Ocean/Fragment.glsl';
+import oceanVertexShader from '@shaders/OceanSurface/Vertex.glsl';
+import oceanFragmentShader from '@shaders/OceanSurface/Fragment.glsl';
 
 class Scene extends ThreeManager {
 	constructor() {
