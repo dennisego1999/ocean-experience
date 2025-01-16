@@ -54,8 +54,8 @@ class Scene extends ThreeManager {
 			uniforms: {
 				uTime: new Uniform(0),
 
-				uBigWavesElevation: new Uniform(0.2),
-				uBigWavesFrequency: new Uniform(new Vector2(0.8, 1.5)),
+				uBigWavesElevation: new Uniform(0.05),
+				uBigWavesFrequency: new Uniform(new Vector2(0.8, 4.2)),
 				uBigWavesSpeed: new Uniform(0.75),
 
 				uSmallWavesElevation: new Uniform(0.15),
@@ -65,7 +65,7 @@ class Scene extends ThreeManager {
 
 				uDepthColor: new Uniform(new Color(this.config.depthColor)),
 				uSurfaceColor: new Uniform(new Color(this.config.surfaceColor)),
-				uColorOffset: new Uniform(0.12),
+				uColorOffset: new Uniform(0.08),
 				uColorMultiplier: new Uniform(2.1)
 			},
 			side: DoubleSide
