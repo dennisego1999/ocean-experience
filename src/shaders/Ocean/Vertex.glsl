@@ -21,44 +21,44 @@ varying vec2 vUv;                     // The UV coordinates of the current verte
 
 void main()
 {
-// Pass UV coordinates to the fragment shader for texturing
-vUv = uv;
+    // Pass UV coordinates to the fragment shader for texturing
+    vUv = uv;
 
-// Calculate the world position of the vertex by transforming the local position by the model matrix
-vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-vWorldPosition = modelPosition.xyz; // Store the world position for later use (e.g., lighting or effects)
+    // Calculate the world position of the vertex by transforming the local position by the model matrix
+    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+    vWorldPosition = modelPosition.xyz; // Store the world position for later use (e.g., lighting or effects)
 
-// Elevation due to big waves (sinusoidal waves in both x and z directions)
-float elevation = sin(modelPosition.x * uBigWavesFrequency.x + uTime * uBigWavesSpeed) *
-sin(modelPosition.z * uBigWavesFrequency.y + uTime * uBigWavesSpeed) *
-uBigWavesElevation; // Sine function applied for big wave motion
+    // Elevation due to big waves (sinusoidal waves in both x and z directions)
+    float elevation = sin(modelPosition.x * uBigWavesFrequency.x + uTime * uBigWavesSpeed) *
+    sin(modelPosition.z * uBigWavesFrequency.y + uTime * uBigWavesSpeed) *
+    uBigWavesElevation; // Sine function applied for big wave motion
 
-// Add small waves using Perlin noise in multiple iterations for more complex wave patterns
-for(float i = 1.0; i <= uSmallIterations; i++)
-{
-// Apply Perlin noise to generate small wave heights in xz plane, scaled by frequency and speed
-// The noise value is adjusted by small wave elevation and iteration number to add more variation
-elevation -= abs(cnoise(vec3(modelPosition.xz * uSmallWavesFrequency * i, uTime * uSmallWavesSpeed)) *
-uSmallWavesElevation / i);
-}
+    // Add small waves using Perlin noise in multiple iterations for more complex wave patterns
+    for(float i = 1.0; i <= uSmallIterations; i++)
+    {
+        // Apply Perlin noise to generate small wave heights in xz plane, scaled by frequency and speed
+        // The noise value is adjusted by small wave elevation and iteration number to add more variation
+        elevation -= abs(cnoise(vec3(modelPosition.xz * uSmallWavesFrequency * i, uTime * uSmallWavesSpeed)) *
+        uSmallWavesElevation / i);
+    }
 
-// Update the y-coordinate of the model position with the calculated elevation to simulate wave motion
-modelPosition.y += elevation;
+    // Update the y-coordinate of the model position with the calculated elevation to simulate wave motion
+    modelPosition.y += elevation;
 
-// Track the maximum wave height dynamically (absolute value of the elevation)
-vMaxWaveHeight = abs(elevation);
+    // Track the maximum wave height dynamically (absolute value of the elevation)
+    vMaxWaveHeight = abs(elevation);
 
-// Apply the view matrix to the model position to convert it from model space to view space
-vec4 viewPosition = viewMatrix * modelPosition;
+    // Apply the view matrix to the model position to convert it from model space to view space
+    vec4 viewPosition = viewMatrix * modelPosition;
 
-// Apply the projection matrix to convert from view space to clip space
-vec4 projectedPosition = projectionMatrix * viewPosition;
+    // Apply the projection matrix to convert from view space to clip space
+    vec4 projectedPosition = projectionMatrix * viewPosition;
 
-// Set the final position for the vertex, determining where it will be displayed on the screen
-gl_Position = projectedPosition;
+    // Set the final position for the vertex, determining where it will be displayed on the screen
+    gl_Position = projectedPosition;
 
-// Pass the final elevation value to the fragment shader for color calculations (e.g., foam, fog)
-vElevation = elevation;
+    // Pass the final elevation value to the fragment shader for color calculations (e.g., foam, fog)
+    vElevation = elevation;
 }
 
 /**

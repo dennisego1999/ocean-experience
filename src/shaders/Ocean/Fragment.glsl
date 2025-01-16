@@ -15,7 +15,6 @@ varying float vElevation;        // Wave height at the current fragment (calcula
 varying float vMaxWaveHeight;    // Maximum wave height (calculated in the vertex shader)
 varying vec2 vUv;                // UV coordinates for the current fragment (used for texturing)
 
-// Main fragment shader function
 void main()
 {
     // Calculate the minimum distance to any edge of the texture (left, right, top, or bottom)
