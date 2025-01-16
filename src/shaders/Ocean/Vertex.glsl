@@ -2,17 +2,22 @@ uniform float uTime;
 uniform float uBigWavesElevation;
 uniform vec2 uBigWavesFrequency;
 uniform float uBigWavesSpeed;
-varying float vElevation;
 uniform float uSmallWavesElevation;
 uniform float uSmallWavesFrequency;
 uniform float uSmallWavesSpeed;
 uniform float uSmallIterations;
+varying float vElevation;
+varying vec3 vWorldPosition;
+varying vec2 vUv;
 
 #include ../Includes/ClassicPerlin3dNoise.glsl;
 
 void main()
 {
+    vUv = uv;
+
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+    vWorldPosition = modelPosition.xyz;
 
     // Elevation
     float elevation = sin(modelPosition.x * uBigWavesFrequency.x + uTime * uBigWavesSpeed) *
