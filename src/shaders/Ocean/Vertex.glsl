@@ -8,6 +8,7 @@ uniform float uSmallWavesSpeed;
 uniform float uSmallIterations;
 
 varying float vElevation;
+varying float vMaxWaveHeight;
 varying vec3 vWorldPosition;
 varying vec2 vUv;
 
@@ -15,7 +16,7 @@ varying vec2 vUv;
 
 void main()
 {
-    // Set the UV coordinates to varyings
+// Pass UV coordinates to the fragment shader
     vUv = uv;
 
     // Calculate world position by transforming the model position by the model matrix
@@ -35,6 +36,9 @@ void main()
 
     // Update the y-coordinate of the model position based on calculated elevation
     modelPosition.y += elevation;
+
+    // Track the maximum wave height dynamically
+    vMaxWaveHeight = abs(elevation);
 
     // Apply view matrix to model position to get view space position
     vec4 viewPosition = viewMatrix * modelPosition;

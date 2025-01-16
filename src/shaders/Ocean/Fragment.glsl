@@ -4,9 +4,11 @@ uniform float uColorOffset;
 uniform float uColorMultiplier;
 uniform vec3 uFogColor;
 uniform float uFogIntensity;
+uniform vec3 uFoamColor;
+uniform float uFoamIntensity;
 
 varying float vElevation;
-varying vec3 vWorldPosition;
+varying float vMaxWaveHeight;
 varying vec2 vUv;
 
 void main()
@@ -21,8 +23,12 @@ void main()
     // Calculate the ocean color by mixing depth and surface color based on elevation and color settings
     vec3 oceanColor = mix(uDepthColor, uSurfaceColor, (vElevation + uColorOffset) * uColorMultiplier);
 
+    // Foam factor at wave crests
+    float foamFactor = smoothstep(vMaxWaveHeight - 0.05, vMaxWaveHeight, vElevation);
+    vec3 foamColor = mix(oceanColor, uFoamColor, foamFactor * uFoamIntensity);
+
     // Mix the ocean color with the fog color based on the fogFactor, using smoothstep for a gradual transition
-    vec3 finalColor = mix(oceanColor, uFogColor, smoothstep(0.7, 1.0, fogFactor) * uFogIntensity);
+    vec3 finalColor = mix(foamColor, uFogColor, smoothstep(0.7, 1.0, fogFactor) * uFogIntensity);
 
     // Set the final color for the fragment
     gl_FragColor = vec4(finalColor, 1.0);

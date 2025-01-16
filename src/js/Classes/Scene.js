@@ -2,18 +2,15 @@ import {
 	Color,
 	DoubleSide,
 	EquirectangularReflectionMapping,
-	MathUtils,
 	Mesh,
 	PlaneGeometry,
 	ShaderMaterial,
 	Uniform,
-	Vector2,
-	Vector3
+	Vector2
 } from 'three';
 import ThreeManager from '@js/Classes/ThreeManager.js';
 import oceanVertexShader from '@shaders/Ocean/Vertex.glsl';
 import oceanFragmentShader from '@shaders/Ocean/Fragment.glsl';
-import { Sky } from 'three/addons';
 
 class Scene extends ThreeManager {
 	constructor() {
@@ -23,7 +20,8 @@ class Scene extends ThreeManager {
 		this.config = {
 			depthColor: '#186691',
 			surfaceColor: '#9bd8ff',
-			fogColor: '#ffffff'
+			fogColor: '#ffffff',
+			foamColor: '#ffffff'
 		};
 	}
 
@@ -73,7 +71,10 @@ class Scene extends ThreeManager {
 				uColorMultiplier: new Uniform(2.1),
 
 				uFogColor: new Uniform(new Color(this.config.fogColor)),
-				uFogIntensity: new Uniform(0.5)
+				uFogIntensity: new Uniform(0.5),
+
+				uFoamColor: new Uniform(new Color(this.config.foamColor)),
+				uFoamIntensity: new Uniform(1.0)
 			},
 			side: DoubleSide
 		});
@@ -144,15 +145,24 @@ class Scene extends ThreeManager {
 					.max(10)
 					.step(0.001)
 					.name('uColorMultiplier');
+				this.gui.addColor(this.config, 'fogColor').onChange(() => {
+					this.oceanMaterial.uniforms.uFogColor.value.set(this.config.fogColor);
+				});
 				this.gui
 					.add(this.oceanMaterial.uniforms.uFogIntensity, 'value')
 					.min(0)
 					.max(10)
 					.step(0.001)
 					.name('uFogIntensity');
-				this.gui.addColor(this.config, 'fogColor').onChange(() => {
-					this.oceanMaterial.uniforms.uFogColor.value.set(this.config.fogColor);
+				this.gui.addColor(this.config, 'foamColor').onChange(() => {
+					this.oceanMaterial.uniforms.uFoamColor.value.set(this.config.foamColor);
 				});
+				this.gui
+					.add(this.oceanMaterial.uniforms.uFoamIntensity, 'value')
+					.min(0)
+					.max(1)
+					.step(0.001)
+					.name('uFoamIntensity');
 			});
 		}
 
