@@ -7,9 +7,8 @@ class Controls {
 		this.domElement = domElement || document.body;
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
-		this.lookSpeedFactor = 5;
 		this.maxScroll = 5;
-		this.minScroll = -10;
+		this.minScroll = -6;
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
@@ -49,14 +48,15 @@ class Controls {
 		this.currentMouseCoords.x = lerp(this.currentMouseCoords.x, this.targetMouseCoords.x, 0.05);
 		this.currentMouseCoords.y = lerp(this.currentMouseCoords.y, this.targetMouseCoords.y, 0.05);
 
-		// Update camera look direction
+		// Adjust pointer position based on camera height
+		const offset = 5;
 		const lookAtPosition = new Vector3(
-			-this.currentMouseCoords.x * this.lookSpeedFactor,
-			this.currentMouseCoords.y * this.lookSpeedFactor,
-			0
+			-this.currentMouseCoords.x * offset,
+			this.camera.position.y,
+			this.currentMouseCoords.y
 		);
 
-		// Look at target position
+		// Camera should look at the pointer
 		this.camera.lookAt(lookAtPosition);
 	}
 }
