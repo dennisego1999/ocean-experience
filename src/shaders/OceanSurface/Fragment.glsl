@@ -37,9 +37,15 @@ void main()
     float foamFactor = smoothstep(vMaxWaveHeight - 0.05, vMaxWaveHeight, vElevation); // 0.05 is the threshold for foam
     vec3 foamColor = mix(oceanColor, uFoamColor, foamFactor * uFoamIntensity); // Mix ocean color with foam color based on foamFactor
 
-    // Apply fog effect to the ocean based on the distance from the edges of the screen (fogFactor)
-    // Use smoothstep to ensure a smooth transition from ocean color to fog color
-    vec3 finalColor = mix(foamColor, uFogColor, smoothstep(0.7, 1.0, fogFactor) * uFogIntensity);
+    vec3 finalColor;
+    if (vElevation >= -0.1) {
+        // Apply fog effect to the ocean based on the distance from the edges of the screen (fogFactor)
+        // Use smoothstep to ensure a smooth transition from ocean color to fog color
+        finalColor = mix(foamColor, uFogColor, smoothstep(0.7, 1.0, fogFactor) * uFogIntensity);
+    } else {
+        finalColor = oceanColor;
+    }
+
 
     // Set the final fragment color (what will be displayed on the screen)
     gl_FragColor = vec4(finalColor, 1.0); // Set the final color (RGB) with full opacity (alpha = 1.0)
