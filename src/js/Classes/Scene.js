@@ -4,7 +4,6 @@ import {
 	DoubleSide,
 	EquirectangularReflectionMapping,
 	Mesh,
-	MeshBasicMaterial,
 	PlaneGeometry,
 	ShaderMaterial,
 	Uniform,
@@ -13,22 +12,28 @@ import {
 import ThreeManager from '@js/Classes/ThreeManager.js';
 import oceanVertexShader from '@shaders/OceanSurface/Vertex.glsl';
 import oceanFragmentShader from '@shaders/OceanSurface/Fragment.glsl';
+import underwaterVertexShader from '@shaders/Underwater/Vertex.glsl';
+import underwaterFragmentShader from '@shaders/Underwater/Fragment.glsl';
 
 class Scene extends ThreeManager {
 	constructor() {
 		super();
 
 		this.oceanSurfaceMaterial = null;
+		this.underwaterMaterial = null;
+
+		// Configuration for ocean, sky, and underwater visuals
 		this.config = {
 			depthColor: '#186691',
 			surfaceColor: '#9bd8ff',
 			fogColor: '#ffffff',
 			foamColor: '#ffffff',
 			dimensions: {
-				height: 150,
-				width: 150,
-				depth: 150
-			}
+				height: 250,
+				width: 250,
+				depth: 250
+			},
+			skyEXRPath: '/assets/images/sky.exr'
 		};
 	}
 
@@ -56,7 +61,12 @@ class Scene extends ThreeManager {
 	}
 
 	addOcean() {
-		// Creat ocean shader material
+		this.addOceanSurface();
+		this.addUnderwaterBox();
+	}
+
+	addOceanSurface() {
+		// Create a ShaderMaterial for the ocean surface
 		this.oceanSurfaceMaterial = new ShaderMaterial({
 			vertexShader: oceanVertexShader,
 			fragmentShader: oceanFragmentShader,
@@ -189,34 +199,49 @@ class Scene extends ThreeManager {
 		// Create ocean surface mesh
 		const oceanSurface = new Mesh(oceanSurfaceGeometry, this.oceanSurfaceMaterial);
 
-		// Adjust the ocean surface mesh
+		// Rotate to lay flat
 		oceanSurface.rotation.x = -Math.PI / 2;
 
 		// Add to scene
 		this.scene.add(oceanSurface);
+	}
 
-		// Add ocean subsurface geometry below the ocean
-		const oceanSubsurfaceGeometry = new BoxGeometry(
+	addUnderwaterBox() {
+		// Create a ShaderMaterial for the underwater environment
+		this.underwaterMaterial = new ShaderMaterial({
+			vertexShader: underwaterVertexShader,
+			fragmentShader: underwaterFragmentShader,
+			uniforms: {
+				uSurfaceColor: new Uniform(new Color(this.config.surfaceColor)),
+				uDepthColor: new Uniform(new Color(this.config.depthColor)),
+				uFogColor: new Uniform(new Color(this.config.fogColor)),
+				uFogIntensity: new Uniform(0.5),
+				uLightScattering: new Uniform(1.0)
+			},
+			side: DoubleSide,
+			transparent: true
+		});
+
+		// Create a large box geometry to encompass the underwater area
+		const underwaterBoxGeometry = new BoxGeometry(
 			this.config.dimensions.width,
 			this.config.dimensions.height,
 			this.config.dimensions.depth
 		);
-		const oceanSubsurfaceMaterial = new ShaderMaterial({ side: DoubleSide });
-		const oceanSubsurface = new Mesh(oceanSubsurfaceGeometry, oceanSubsurfaceMaterial);
 
-		// Translate the geometry to align the bottom at the ocean plane (0, 0, 0)
-		// Move down by half the height to position the bottom of the box at y = 0
-		// Origin is by default at center
-		const offsetHeight = this.config.dimensions.height + 0.45;
-		oceanSubsurfaceGeometry.translate(0, -offsetHeight / 2, 0);
+		// Position underwater box
+		underwaterBoxGeometry.translate(0, -this.config.dimensions.height / 2, 0);
 
-		// Add the ocean subsurface to the scene
-		this.scene.add(oceanSubsurface);
+		// Create a mesh with the underwater box geometry and material
+		const underwaterBox = new Mesh(underwaterBoxGeometry, this.underwaterMaterial);
+
+		// Add the underwater box to the scene
+		this.scene.add(underwaterBox);
 	}
 
 	addSky() {
-		// Load the sky file
-		this.EXRLoader.load('/assets/images/sky.exr', (texture) => {
+		// Load the EXR sky texture
+		this.EXRLoader.load(this.config.skyEXRPath, (texture) => {
 			// Set texture mapping
 			texture.mapping = EquirectangularReflectionMapping;
 

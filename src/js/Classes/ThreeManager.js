@@ -44,8 +44,12 @@ export default class ThreeManager {
 		this.renderer = new WebGLRenderer({
 			antialias: true,
 			powerPreference: 'high-performance',
-			canvas: this.canvas
+			canvas: this.canvas,
+			alpha: true
 		});
+
+		// Set a fully transparent background color
+		this.renderer.setClearColor(0x000000, 0);
 
 		// Set size & aspect ratio
 		this.renderer.toneMapping = ACESFilmicToneMapping;
@@ -71,7 +75,7 @@ export default class ThreeManager {
 
 	setupCamera() {
 		// Set perspective camera
-		this.camera = new PerspectiveCamera(50, this.canvas.offsetWidth / this.canvas.offsetHeight, 0.1, 1000);
+		this.camera = new PerspectiveCamera(25, this.canvas.offsetWidth / this.canvas.offsetHeight, 0.1, 1000);
 
 		// Set camera position
 		this.camera.position.set(0, 1, -10);
