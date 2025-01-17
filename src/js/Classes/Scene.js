@@ -24,8 +24,14 @@ class Scene extends ThreeManager {
 
 		// Configuration for ocean, sky, and underwater visuals
 		this.config = {
-			depthColor: '#186691',
-			surfaceColor: '#9bd8ff',
+			surface: {
+				surfaceColor: '#9bd8ff',
+				depthColor: '#186691'
+			},
+			underwater: {
+				surfaceColor: '#95c5e0',
+				depthColor: '#186691'
+			},
 			fogColor: '#ffffff',
 			foamColor: '#ffffff',
 			dimensions: {
@@ -82,8 +88,8 @@ class Scene extends ThreeManager {
 				uSmallWavesSpeed: new Uniform(0.2),
 				uSmallIterations: new Uniform(4.0),
 
-				uDepthColor: new Uniform(new Color(this.config.depthColor)),
-				uSurfaceColor: new Uniform(new Color(this.config.surfaceColor)),
+				uDepthColor: new Uniform(new Color(this.config.surface.depthColor)),
+				uSurfaceColor: new Uniform(new Color(this.config.surface.surfaceColor)),
 				uColorOffset: new Uniform(0.08),
 				uColorMultiplier: new Uniform(2.1),
 
@@ -99,87 +105,88 @@ class Scene extends ThreeManager {
 		if (import.meta.env.VITE_ENABLE_DEBUG === 'true') {
 			// Add debug controls
 			this.addDebugControls(() => {
-				this.gui
+				const surfaceFolder = this.gui.addFolder('Surface Settings');
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uBigWavesElevation, 'value')
 					.min(0)
 					.max(1)
 					.step(0.001)
 					.name('uBigWavesElevation');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uBigWavesFrequency.value, 'x')
 					.min(0)
 					.max(10)
 					.step(0.001)
 					.name('uBigWavesFrequencyX');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uBigWavesFrequency.value, 'y')
 					.min(0)
 					.max(10)
 					.step(0.001)
 					.name('uBigWavesFrequencyY');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uBigWavesSpeed, 'value')
 					.min(0)
 					.max(4)
 					.step(0.001)
 					.name('uBigWavesSpeed');
 
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uSmallWavesElevation, 'value')
 					.min(0)
 					.max(1)
 					.step(0.001)
 					.name('uSmallWavesElevation');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uSmallWavesFrequency, 'value')
 					.min(0)
 					.max(30)
 					.step(0.001)
 					.name('uSmallWavesFrequency');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uSmallWavesSpeed, 'value')
 					.min(0)
 					.max(4)
 					.step(0.001)
 					.name('uSmallWavesSpeed');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uSmallIterations, 'value')
 					.min(0)
 					.max(5)
 					.step(1)
 					.name('uSmallIterations');
 
-				this.gui.addColor(this.config, 'depthColor').onChange(() => {
-					this.oceanSurfaceMaterial.uniforms.uDepthColor.value.set(this.config.depthColor);
+				surfaceFolder.addColor(this.config.surface, 'depthColor').onChange(() => {
+					this.oceanSurfaceMaterial.uniforms.uDepthColor.value.set(this.config.surface.depthColor);
 				});
-				this.gui.addColor(this.config, 'surfaceColor').onChange(() => {
-					this.oceanSurfaceMaterial.uniforms.uSurfaceColor.value.set(this.config.surfaceColor);
+				surfaceFolder.addColor(this.config.surface, 'surfaceColor').onChange(() => {
+					this.oceanSurfaceMaterial.uniforms.uSurfaceColor.value.set(this.config.surface.surfaceColor);
 				});
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uColorOffset, 'value')
 					.min(0)
 					.max(1)
 					.step(0.001)
 					.name('uColorOffset');
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uColorMultiplier, 'value')
 					.min(0)
 					.max(10)
 					.step(0.001)
 					.name('uColorMultiplier');
-				this.gui.addColor(this.config, 'fogColor').onChange(() => {
+				surfaceFolder.addColor(this.config, 'fogColor').onChange(() => {
 					this.oceanSurfaceMaterial.uniforms.uFogColor.value.set(this.config.fogColor);
 				});
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uFogIntensity, 'value')
 					.min(0)
 					.max(10)
 					.step(0.001)
 					.name('uFogIntensity');
-				this.gui.addColor(this.config, 'foamColor').onChange(() => {
+				surfaceFolder.addColor(this.config, 'foamColor').onChange(() => {
 					this.oceanSurfaceMaterial.uniforms.uFoamColor.value.set(this.config.foamColor);
 				});
-				this.gui
+				surfaceFolder
 					.add(this.oceanSurfaceMaterial.uniforms.uFoamIntensity, 'value')
 					.min(0)
 					.max(1)
@@ -212,8 +219,8 @@ class Scene extends ThreeManager {
 			vertexShader: underwaterVertexShader,
 			fragmentShader: underwaterFragmentShader,
 			uniforms: {
-				uSurfaceColor: new Uniform(new Color(this.config.surfaceColor)),
-				uDepthColor: new Uniform(new Color(this.config.depthColor)),
+				uSurfaceColor: new Uniform(new Color(this.config.underwater.surfaceColor)),
+				uDepthColor: new Uniform(new Color(this.config.underwater.depthColor)),
 				uFogColor: new Uniform(new Color(this.config.fogColor)),
 				uFogIntensity: new Uniform(0.5),
 				uLightScattering: new Uniform(1.0)
@@ -221,6 +228,34 @@ class Scene extends ThreeManager {
 			side: DoubleSide,
 			transparent: true
 		});
+
+		if (import.meta.env.VITE_ENABLE_DEBUG === 'true') {
+			// Add structured debug controls
+			this.addDebugControls(() => {
+				const underwaterFolder = this.gui.addFolder('Underwater Settings');
+				underwaterFolder.addColor(this.config.underwater, 'surfaceColor').onChange(() => {
+					this.underwaterMaterial.uniforms.uSurfaceColor.value.set(this.config.underwater.surfaceColor);
+				});
+				underwaterFolder.addColor(this.config.underwater, 'depthColor').onChange(() => {
+					this.underwaterMaterial.uniforms.uDepthColor.value.set(this.config.underwater.depthColor);
+				});
+				underwaterFolder.addColor(this.config, 'fogColor').onChange(() => {
+					this.underwaterMaterial.uniforms.uFogColor.value.set(this.config.fogColor);
+				});
+				underwaterFolder
+					.add(this.underwaterMaterial.uniforms.uFogIntensity, 'value')
+					.min(0)
+					.max(5)
+					.step(0.001)
+					.name('uFogIntensity');
+				underwaterFolder
+					.add(this.underwaterMaterial.uniforms.uLightScattering, 'value')
+					.min(0)
+					.max(10)
+					.step(0.001)
+					.name('uLightScattering');
+			});
+		}
 
 		// Create a large box geometry to encompass the underwater area
 		const underwaterBoxGeometry = new BoxGeometry(
