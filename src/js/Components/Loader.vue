@@ -12,12 +12,25 @@ function startExperience() {
 	emit('close');
 
 	// Play audio
-	const bgAudio = document.getElementById('bg-audio');
-	if (bgAudio) {
-		bgAudio.muted = false;
-		bgAudio.currentTime = 0;
-		bgAudio.play();
-	}
+	const autoStartAudioElements = [
+		{ id: 'bg-audio', volume: 0.1 },
+		{ id: 'ocean-audio', volume: 0.2 },
+		{ id: 'underwater-bg-audio', volume: 0.5 }
+	];
+	autoStartAudioElements.forEach((element) => {
+		const audio = document.getElementById(element.id);
+		if (audio) {
+			audio.pause();
+			audio.load();
+			audio.muted = false;
+			audio.currentTime = 0;
+			audio.play();
+
+			if (element.volume) {
+				audio.volume = element.volume;
+			}
+		}
+	});
 }
 </script>
 <template>

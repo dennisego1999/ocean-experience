@@ -63,6 +63,9 @@ class Scene extends ThreeManager {
 
 			// Animate the particles
 			this.animateParticles();
+
+			// Set the audio muted states
+			this.handleAudio();
 		});
 
 		// Start animation loop
@@ -363,6 +366,42 @@ class Scene extends ThreeManager {
 
 		// Notify Three.js of position updates
 		this.particleGeometry.attributes.position.needsUpdate = true;
+	}
+
+	handleAudio() {
+		const submergeAudio = document.getElementById('submerge-audio');
+		const oceanAudio = document.getElementById('ocean-audio');
+		const underwaterAudio = document.getElementById('underwater-bg-audio');
+
+		if (this.camera.position.y <= 0) {
+			if (submergeAudio.paused) {
+				// Play submerge audio
+				submergeAudio.pause();
+				submergeAudio.muted = false;
+				submergeAudio.currentTime = 0;
+				submergeAudio.volume = 0.1;
+				submergeAudio.play();
+			}
+
+			// Unmute underwater audio
+			underwaterAudio.muted = false;
+
+			// Mute ocean audio
+			oceanAudio.muted = true;
+
+			return;
+		}
+
+		// Mute submerge and reset
+		submergeAudio.pause();
+		submergeAudio.muted = true;
+		submergeAudio.currentTime = 0;
+
+		// Mute underwater audio
+		underwaterAudio.muted = true;
+
+		// Unmute ocean audio
+		oceanAudio.muted = false;
 	}
 }
 

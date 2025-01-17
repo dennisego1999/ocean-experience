@@ -38,6 +38,32 @@ onBeforeUnmount(() => {
 
 		<canvas id="scene-canvas" class="absolute inset-0 z-0 h-full w-full" />
 
-		<audio id="bg-audio" src="/assets/audio/bg.mp3" muted preload="auto" class="pointer-events-none hidden" />
+		<audio id="bg-audio" src="/assets/audio/bg.mp3" loop muted preload="auto" class="pointer-events-none hidden" />
+
+		<audio
+			id="ocean-audio"
+			src="/assets/audio/ocean.mp3"
+			loop
+			muted
+			preload="auto"
+			class="pointer-events-none hidden"
+		/>
+
+		<audio
+			id="underwater-bg-audio"
+			src="/assets/audio/underwater-bg.mp3"
+			loop
+			muted
+			preload="auto"
+			class="pointer-events-none hidden"
+		/>
+
+		<audio
+			id="submerge-audio"
+			src="/assets/audio/submerge.mp3"
+			muted
+			preload="auto"
+			class="pointer-events-none hidden"
+		/>
 	</div>
 </template>
