@@ -1,10 +1,14 @@
 import {
 	BoxGeometry,
+	BufferAttribute,
+	BufferGeometry,
 	Color,
 	DoubleSide,
 	EquirectangularReflectionMapping,
 	Mesh,
 	PlaneGeometry,
+	Points,
+	PointsMaterial,
 	ShaderMaterial,
 	Uniform,
 	Vector2
@@ -19,8 +23,10 @@ class Scene extends ThreeManager {
 	constructor() {
 		super();
 
+		this.particleCount = 1000000;
 		this.oceanSurfaceMaterial = null;
 		this.underwaterMaterial = null;
+		this.particleGeometry = null;
 
 		// Configuration for ocean, sky, and underwater visuals
 		this.config = {
@@ -54,6 +60,9 @@ class Scene extends ThreeManager {
 		this.setRenderAction(() => {
 			// Update the uniforms
 			this.oceanSurfaceMaterial.uniforms.uTime.value = this.clock.getElapsedTime();
+
+			// Animate the particles
+			this.animateParticles();
 		});
 
 		// Start animation loop
@@ -64,6 +73,7 @@ class Scene extends ThreeManager {
 		// Set up the scene
 		this.addOcean();
 		this.addSky();
+		this.addParticles();
 	}
 
 	addOcean() {
@@ -283,6 +293,76 @@ class Scene extends ThreeManager {
 			// Set scene background
 			this.scene.background = texture;
 		});
+	}
+
+	addParticles() {
+		// Create a massive amount of particles
+		this.particleGeometry = new BufferGeometry();
+		const positions = new Float32Array(this.particleCount * 3);
+		const velocities = new Float32Array(this.particleCount * 3);
+		const colors = new Float32Array(this.particleCount * 3);
+
+		// Initialize particle positions, velocities, and colors
+		for (let i = 0; i < this.particleCount; i++) {
+			// Randomize positions within the underwater box, ensuring they are in front of the camera
+			positions[i * 3] = (Math.random() - 0.5) * this.config.dimensions.width * 2; // X
+			positions[i * 3 + 1] = -(Math.random() * this.config.dimensions.height); // Y (below surface)
+			positions[i * 3 + 2] = -(Math.random() * this.config.dimensions.depth); // Z (in front of the camera)
+
+			// Randomize velocities for smooth drifting
+			velocities[i * 3] = (Math.random() - 0.5) * 0.01; // Velocity in X
+			velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.01; // Velocity in Y
+			velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.01; // Velocity in Z
+
+			// Randomize particle colors (R, G, B)
+			colors[i * 3] = Math.random(); // Red
+			colors[i * 3 + 1] = Math.random(); // Green
+			colors[i * 3 + 2] = Math.random(); // Blue
+		}
+
+		// Assign attributes to the geometry
+		this.particleGeometry.setAttribute('position', new BufferAttribute(positions, 3));
+		this.particleGeometry.setAttribute('velocity', new BufferAttribute(velocities, 3));
+		this.particleGeometry.setAttribute('color', new BufferAttribute(colors, 3));
+
+		// Create a PointsMaterial for the particles with vertex colors
+		const particleMaterial = new PointsMaterial({
+			size: 0.1, // Particle size
+			transparent: true,
+			opacity: 0.7, // Slight transparency
+			depthWrite: false, // Disable depth write for better blending
+			vertexColors: true // Enable vertex colors
+		});
+
+		// Create the particle system
+		const particles = new Points(this.particleGeometry, particleMaterial);
+		this.scene.add(particles);
+	}
+
+	animateParticles() {
+		const positions = this.particleGeometry.attributes.position.array;
+		const velocities = this.particleGeometry.attributes.velocity.array;
+
+		for (let i = 0; i < this.particleCount; i++) {
+			// Update particle positions based on velocity
+			positions[i * 3] += velocities[i * 3]; // X
+			positions[i * 3 + 1] += velocities[i * 3 + 1]; // Y
+			positions[i * 3 + 2] += velocities[i * 3 + 2]; // Z
+
+			// Reset particles if they go out of bounds (respect underwater box dimensions)
+			if (positions[i * 3] > this.config.dimensions.width || positions[i * 3] < -this.config.dimensions.width) {
+				positions[i * 3] = (Math.random() - 0.5) * this.config.dimensions.width * 2;
+			}
+			if (positions[i * 3 + 1] > 0 || positions[i * 3 + 1] < -this.config.dimensions.height) {
+				positions[i * 3 + 1] = -(Math.random() * this.config.dimensions.height);
+			}
+			if (positions[i * 3 + 2] > 0 || positions[i * 3 + 2] < -this.config.dimensions.depth) {
+				positions[i * 3 + 2] = -(Math.random() * this.config.dimensions.depth); // Keep in front of the camera
+			}
+		}
+
+		// Notify Three.js of position updates
+		this.particleGeometry.attributes.position.needsUpdate = true;
 	}
 }
 
