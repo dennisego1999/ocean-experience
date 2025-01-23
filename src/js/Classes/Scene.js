@@ -41,9 +41,9 @@ class Scene extends ThreeManager {
 			fogColor: '#ffffff',
 			foamColor: '#ffffff',
 			dimensions: {
-				height: 250,
-				width: 250,
-				depth: 250
+				height: 80,
+				width: 1000,
+				depth: 500
 			},
 			skyEXRPath: '/assets/images/sky.exr'
 		};
@@ -211,9 +211,9 @@ class Scene extends ThreeManager {
 		// Create ocean geometry
 		const oceanSurfaceGeometry = new PlaneGeometry(
 			this.config.dimensions.width,
-			this.config.dimensions.height,
-			512,
-			512
+			this.config.dimensions.depth,
+			1024,
+			1024
 		);
 
 		// Create ocean surface mesh

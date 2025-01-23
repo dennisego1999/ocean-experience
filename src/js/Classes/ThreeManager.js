@@ -80,6 +80,9 @@ export default class ThreeManager {
 		// Set camera position
 		this.camera.position.set(0, 1, -10);
 
+		// Set aspect ratio
+		this.camera.aspect = window.innerWidth / window.innerHeight;
+
 		// Update camera projection matrix
 		this.camera.updateProjectionMatrix();
 

@@ -1,5 +1,6 @@
 import { lerp } from '@js/Helpers/index.js';
 import { Vector2, Vector3 } from 'three';
+import Scene from '@js/Classes/Scene.js';
 
 class Controls {
 	constructor(camera, domElement) {
@@ -8,7 +9,7 @@ class Controls {
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
 		this.maxScroll = 5;
-		this.minScroll = -6;
+		this.minScroll = -Scene.config.dimensions.height;
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
@@ -49,7 +50,7 @@ class Controls {
 		this.currentMouseCoords.y = lerp(this.currentMouseCoords.y, this.targetMouseCoords.y, 0.05);
 
 		// Adjust pointer position based on camera height
-		const offset = 5;
+		const offset = 1.5;
 		const lookAtPosition = new Vector3(
 			-this.currentMouseCoords.x * offset,
 			this.camera.position.y,
