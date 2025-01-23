@@ -1,14 +1,10 @@
 import {
 	BoxGeometry,
-	BufferAttribute,
-	BufferGeometry,
 	Color,
 	DoubleSide,
 	EquirectangularReflectionMapping,
 	Mesh,
 	PlaneGeometry,
-	Points,
-	PointsMaterial,
 	ShaderMaterial,
 	Uniform,
 	Vector2
@@ -23,7 +19,6 @@ class Scene extends ThreeManager {
 	constructor() {
 		super();
 
-		this.particleCount = 1000000;
 		this.oceanSurfaceMaterial = null;
 		this.underwaterMaterial = null;
 
