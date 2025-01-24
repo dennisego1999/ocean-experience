@@ -1,15 +1,11 @@
 import {
 	AmbientLight,
-	AnimationMixer,
 	BoxGeometry,
 	Color,
 	DoubleSide,
 	EquirectangularReflectionMapping,
-	LoopRepeat,
 	Mesh,
 	PlaneGeometry,
-	PointLight,
-	PointLightHelper,
 	ShaderMaterial,
 	Uniform,
 	Vector2
@@ -61,6 +57,22 @@ class Scene extends ThreeManager {
 		this.setRenderAction(() => {
 			// Update the uniforms
 			this.oceanSurfaceMaterial.uniforms.uTime.value = this.clock.getElapsedTime();
+
+			// Update the boat's position and rotation
+			if (this.boat) {
+				const boatX = this.boat.position.x;
+				const boatZ = this.boat.position.z;
+
+				// Compute wave elevation for position
+				this.boat.position.y = this.getWaveElevation(boatX, boatZ);
+
+				// Compute wave gradient for rotation
+				const gradient = this.getWaveGradient(boatX, boatZ);
+
+				// Adjust boat rotation to simulate tilting
+				this.boat.rotation.x = -gradient.z * 1.25;
+				this.boat.rotation.z = gradient.x * 1.25;
+			}
 
 			// Set the audio muted states
 			this.handleAudio();
@@ -376,6 +388,49 @@ class Scene extends ThreeManager {
 
 		// Unmute ocean audio
 		oceanAudio.muted = false;
+	}
+
+	getWaveElevation(x, z) {
+		const uTime = this.oceanSurfaceMaterial.uniforms.uTime.value;
+
+		// Big waves
+		const bigWavesX = this.oceanSurfaceMaterial.uniforms.uBigWavesFrequency.value.x;
+		const bigWavesZ = this.oceanSurfaceMaterial.uniforms.uBigWavesFrequency.value.y;
+		const bigWavesElevation = this.oceanSurfaceMaterial.uniforms.uBigWavesElevation.value;
+		const bigWavesSpeed = this.oceanSurfaceMaterial.uniforms.uBigWavesSpeed.value;
+
+		const bigWaveHeight =
+			Math.sin(bigWavesX * x + uTime * bigWavesSpeed) *
+			Math.sin(bigWavesZ * z + uTime * bigWavesSpeed) *
+			bigWavesElevation;
+
+		// Small waves
+		const smallWavesElevation = this.oceanSurfaceMaterial.uniforms.uSmallWavesElevation.value;
+		const smallWavesFrequency = this.oceanSurfaceMaterial.uniforms.uSmallWavesFrequency.value;
+		const smallWavesSpeed = this.oceanSurfaceMaterial.uniforms.uSmallWavesSpeed.value;
+		const smallIterations = this.oceanSurfaceMaterial.uniforms.uSmallIterations.value;
+
+		let smallWaveHeight = 0;
+		for (let i = 0; i < smallIterations; i++) {
+			smallWaveHeight +=
+				(Math.cos(smallWavesFrequency * (x + z) + uTime * smallWavesSpeed) * smallWavesElevation) / smallIterations;
+		}
+
+		// Define offset
+		const offset = 0.36;
+
+		// Combine wave heights
+		return bigWaveHeight + smallWaveHeight - offset;
+	}
+
+	getWaveGradient(x, z) {
+		const delta = 0.1; // Small step for finite difference approximation
+
+		// Compute the gradient in X and Z directions
+		const elevationX = this.getWaveElevation(x + delta, z) - this.getWaveElevation(x - delta, z);
+		const elevationZ = this.getWaveElevation(x, z + delta) - this.getWaveElevation(x, z - delta);
+
+		return { x: elevationX, z: elevationZ };
 	}
 }
 
