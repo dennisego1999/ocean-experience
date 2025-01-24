@@ -33,6 +33,10 @@ class Controls {
 	}
 
 	handleWheel(event) {
+		if (!Scene.isReady.value) {
+			return;
+		}
+
 		// Prevent page scroll
 		event.preventDefault();
 

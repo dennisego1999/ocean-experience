@@ -3,3 +3,8 @@
 @tailwind utilities;
 
 @import "global/transitions";
+@import "global/fonts";
+
+* {
+  @apply font-barriecito;
+}

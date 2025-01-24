@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Scene from '@js/Classes/Scene.js';
 import Loader from '@js/Components/Loader.vue';
+import PrimaryButton from '../Components/PrimaryButton.vue';
 
 // Set variables
 const isLoaderVisible = ref(true);
@@ -10,6 +11,11 @@ const isLoaderVisible = ref(true);
 function closeLoader() {
 	// Set ref
 	isLoaderVisible.value = false;
+}
+
+function dive() {
+	// Dive to specific depth
+	Scene.dive(-2);
 }
 
 // Life cycles
@@ -34,6 +40,17 @@ onBeforeUnmount(() => {
 	<div class="flex h-[100dvh] w-screen items-stretch justify-center">
 		<Transition name="fade" mode="out-in">
 			<Loader v-if="isLoaderVisible" @close="closeLoader" />
+		</Transition>
+
+		<Transition name="fade" mode="out-in">
+			<div
+				v-if="!Scene.isReady.value"
+				class="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2"
+			>
+				<span class="text-4xl text-white"> Enjoy the depths of our ocean </span>
+
+				<PrimaryButton @click="dive" class="w-fit"> Take a dive </PrimaryButton>
+			</div>
 		</Transition>
 
 		<canvas id="scene-canvas" class="absolute inset-0 z-0 h-full w-full" />

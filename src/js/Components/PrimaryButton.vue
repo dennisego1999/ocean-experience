@@ -31,7 +31,7 @@ defineProps({
 	<a
 		v-if="href && downloadFile"
 		:class="[
-			'grid cursor-pointer place-content-center rounded-md border border-transparent bg-black px-3 py-2 text-xl font-medium text-white focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-white',
+			'grid cursor-pointer place-content-center rounded-md border border-transparent bg-blue-400 px-3 py-2 text-xl font-medium text-white shadow-xl transition-colors hover:bg-blue-300 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-white',
 			$attrs.class,
 			{ 'pointer-events-none opacity-30': disabled }
 		]"
@@ -45,7 +45,7 @@ defineProps({
 	<button
 		v-else
 		:class="[
-			'grid cursor-pointer place-content-center rounded-md border border-transparent bg-black px-3 py-2 text-xl font-medium text-white focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-white',
+			'grid cursor-pointer place-content-center rounded-md border border-transparent bg-blue-400 px-3 py-2 text-xl font-medium text-white shadow-xl transition-colors hover:bg-blue-300 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-white',
 			$attrs.class,
 			{ 'pointer-events-none opacity-30': disabled }
 		]"

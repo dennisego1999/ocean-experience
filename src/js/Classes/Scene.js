@@ -1,3 +1,5 @@
+import { ref } from 'vue';
+import { gsap } from 'gsap';
 import {
 	AmbientLight,
 	BoxGeometry,
@@ -20,6 +22,7 @@ class Scene extends ThreeManager {
 	constructor() {
 		super();
 
+		this.isReady = ref(false);
 		this.fish = null;
 		this.boat = null;
 		this.oceanSurfaceMaterial = null;
@@ -431,6 +434,16 @@ class Scene extends ThreeManager {
 		const elevationZ = this.getWaveElevation(x, z + delta) - this.getWaveElevation(x, z - delta);
 
 		return { x: elevationX, z: elevationZ };
+	}
+
+	dive(targetY) {
+		// Dive to specific depth
+		gsap.to(this.camera.position, {
+			y: targetY,
+			duration: 2,
+			ease: 'power1.inOut',
+			onComplete: () => (this.isReady.value = true)
+		});
 	}
 }
 
