@@ -1,10 +1,15 @@
 import {
+	AmbientLight,
+	AnimationMixer,
 	BoxGeometry,
 	Color,
 	DoubleSide,
 	EquirectangularReflectionMapping,
+	LoopRepeat,
 	Mesh,
 	PlaneGeometry,
+	PointLight,
+	PointLightHelper,
 	ShaderMaterial,
 	Uniform,
 	Vector2
@@ -19,6 +24,8 @@ class Scene extends ThreeManager {
 	constructor() {
 		super();
 
+		this.fish = null;
+		this.boat = null;
 		this.oceanSurfaceMaterial = null;
 		this.underwaterMaterial = null;
 
@@ -64,14 +71,61 @@ class Scene extends ThreeManager {
 	}
 
 	setupScene() {
+		// Add light below the ocean surface
+		this.addSceneLight();
+
 		// Set up the scene
+		this.addModels();
 		this.addOcean();
 		this.addSky();
 	}
 
+	addModels() {
+		// Add fish
+		this.gltfLoader.load('/assets/models/school_of_herring/scene.gltf', (gltf) => {
+			// Assign
+			this.fish = gltf.scene;
+
+			// Add animation
+			this.addAnimation(this.fish, gltf.animations[0]);
+
+			// Update model
+			this.fish.scale.set(2.5, 2.5, 2.5);
+			this.fish.rotation.set(0, Math.PI, 0);
+			this.fish.position.set(0, -3, 0);
+
+			// Add to scene
+			this.scene.add(this.fish);
+		});
+
+		// Add boat
+		this.gltfLoader.load('/assets/models/sailboat/scene.gltf', (gltf) => {
+			// Assign
+			this.boat = gltf.scene;
+
+			// Add animation
+			this.addAnimation(this.boat, gltf.animations[0]);
+
+			// Update model
+			this.boat.scale.set(5, 5, 5);
+			this.boat.rotation.set(0, Math.PI / 2, 0);
+			this.boat.position.set(0, -0.3, 0);
+
+			// Add to scene
+			this.scene.add(this.boat);
+		});
+	}
+
 	addOcean() {
+		// Create ocean
 		this.addOceanSurface();
 		this.addUnderwaterBox();
+	}
+
+	addSceneLight() {
+		// Add light
+		const light = new AmbientLight(0xffffff);
+		this.scene.add(light);
 	}
 
 	addOceanSurface() {

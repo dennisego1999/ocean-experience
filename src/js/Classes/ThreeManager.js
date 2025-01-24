@@ -5,14 +5,17 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import {
 	ACESFilmicToneMapping,
+	AnimationMixer,
 	Clock,
 	DefaultLoadingManager,
+	LoopRepeat,
 	PCFSoftShadowMap,
 	PerspectiveCamera,
 	Scene,
 	WebGLRenderer
 } from 'three';
 import Controls from '@js/Classes/Controls.js';
+import { mix } from 'three/tsl';
 
 export default class ThreeManager {
 	constructor() {
@@ -22,6 +25,7 @@ export default class ThreeManager {
 		this.canvas = null;
 		this.controls = null;
 		this.renderAction = null;
+		this.animationMixers = [];
 		this.gui = null;
 		this.debugObject = {};
 		this.isSceneReady = ref(false);
@@ -108,6 +112,21 @@ export default class ThreeManager {
 		this.gui = new GUI({ width: 340 });
 	}
 
+	addAnimation(model, clip) {
+		// Create new mixer
+		const mixer = new AnimationMixer(model);
+
+		// Add clip action to mixer
+		const clipAction = mixer.clipAction(clip);
+
+		// Set loop and play
+		clipAction.setLoop(LoopRepeat);
+		clipAction.play();
+
+		// Add mixer to array
+		this.animationMixers.push(mixer);
+	}
+
 	addDebugControls(callback) {
 		if (callback) {
 			callback();
@@ -164,6 +183,11 @@ export default class ThreeManager {
 		if (this.renderAction) {
 			// Call render action
 			this.renderAction(delta);
+		}
+
+		if (this.animationMixers.length !== 0) {
+			// Update animation mixer
+			this.animationMixers.forEach((mixer) => mixer.update(delta));
 		}
 
 		// Render
