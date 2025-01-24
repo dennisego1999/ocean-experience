@@ -123,7 +123,7 @@ class Scene extends ThreeManager {
 
 			// Update model
 			this.boat.scale.set(5, 5, 5);
-			this.boat.rotation.set(0, Math.PI / 2, 0);
+			this.boat.rotation.set(0, Math.PI * 0.7, 0);
 			this.boat.position.set(0, -0.3, 0);
 
 			// Add to scene
