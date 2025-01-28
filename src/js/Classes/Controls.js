@@ -8,7 +8,7 @@ class Controls {
 		this.domElement = domElement || document.body;
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
-		this.maxScroll = 5;
+		this.maxScroll = 3;
 		this.minScroll = -Scene.config.dimensions.depth;
 
 		// Bind context
@@ -61,7 +61,7 @@ class Controls {
 		this.currentMouseCoords.y = lerp(this.currentMouseCoords.y, this.targetMouseCoords.y, 0.05);
 
 		// Adjust pointer position based on camera height
-		const offset = 1.5;
+		const offset = 0.5;
 		const lookAtPosition = new Vector3(
 			-this.currentMouseCoords.x * offset,
 			this.camera.position.y,

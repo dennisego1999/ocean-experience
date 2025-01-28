@@ -12,6 +12,7 @@ import {
 	PCFSoftShadowMap,
 	PerspectiveCamera,
 	Scene,
+	TextureLoader,
 	WebGLRenderer
 } from 'three';
 import Controls from '@js/Classes/Controls.js';
@@ -30,6 +31,7 @@ export default class ThreeManager {
 		this.debugObject = {};
 		this.isSceneReady = ref(false);
 		this.EXRLoader = new EXRLoader();
+		this.textureLoader = new TextureLoader();
 		this.clock = new Clock();
 		this.gltfLoader = new GLTFLoader();
 		this.dracoLoader = new DRACOLoader();

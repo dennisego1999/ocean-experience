@@ -1,13 +1,16 @@
 import { ref } from 'vue';
 import { gsap } from 'gsap';
+import { Lensflare, LensflareElement } from 'three/addons';
 import {
 	AmbientLight,
 	BoxGeometry,
 	Color,
+	DirectionalLight,
 	DoubleSide,
 	EquirectangularReflectionMapping,
 	Mesh,
 	PlaneGeometry,
+	PointLight,
 	ShaderMaterial,
 	Uniform,
 	Vector2
@@ -28,6 +31,8 @@ class Scene extends ThreeManager {
 		this.boat = null;
 		this.oceanSurfaceMaterial = null;
 		this.underwaterMaterial = null;
+		this.textureFlare0 = null;
+		this.textureFlare3 = null;
 
 		// Configuration for ocean, sky, and underwater visuals
 		this.config = {
@@ -44,9 +49,9 @@ class Scene extends ThreeManager {
 			dimensions: {
 				height: 80,
 				width: 1000,
-				depth: 50
+				depth: 100
 			},
-			skyEXRPath: '/assets/images/sky.exr'
+			skyEXRPath: '/assets/images/sky/sky.exr'
 		};
 	}
 
@@ -87,8 +92,8 @@ class Scene extends ThreeManager {
 	}
 
 	setupScene() {
-		// Add light below the ocean surface
-		this.addSceneLight();
+		// Add lights
+		this.addPointLights();
 
 		// Set up the scene
 		this.addModels();
@@ -138,10 +143,39 @@ class Scene extends ThreeManager {
 		this.addUnderwaterBox();
 	}
 
-	addSceneLight() {
-		// Add light
+	addPointLights() {
+		// Add ambient light
 		const light = new AmbientLight(0xffffff);
 		this.scene.add(light);
+
+		this.textureFlare0 = this.textureLoader.load('/assets/images/lensflare/lensflare-sun.png');
+		this.textureFlare3 = this.textureLoader.load('/assets/images/lensflare/lensflare-particle.png');
+
+		// Add directional light
+		const dirLight = new DirectionalLight(0xffffff, 0.6);
+		dirLight.position.set(1.5, 2, -10).normalize();
+		this.scene.add(dirLight);
+
+		// Add point light with lens flares
+		this.addPointLight(new Color('white'), 3, 4.5, 10, true);
+	}
+
+	addPointLight(color, x, y, z, addLensFlare = false) {
+		const light = new PointLight(color, 0.4, 2000, 0);
+		light.position.set(x, y, z);
+		this.scene.add(light);
+
+		if (!addLensFlare) {
+			return;
+		}
+
+		const lensFlare = new Lensflare();
+		lensFlare.addElement(new LensflareElement(this.textureFlare0, 400, 0, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 60, 0.6));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 0.7));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 120, 0.9));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 1));
+		light.add(lensFlare);
 	}
 
 	addOceanSurface() {
