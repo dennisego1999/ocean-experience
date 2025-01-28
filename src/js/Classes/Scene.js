@@ -23,6 +23,7 @@ class Scene extends ThreeManager {
 		super();
 
 		this.isReady = ref(false);
+		this.progress = ref(0);
 		this.fish = null;
 		this.boat = null;
 		this.oceanSurfaceMaterial = null;
@@ -43,7 +44,7 @@ class Scene extends ThreeManager {
 			dimensions: {
 				height: 80,
 				width: 1000,
-				depth: 500
+				depth: 50
 			},
 			skyEXRPath: '/assets/images/sky.exr'
 		};
@@ -442,8 +443,24 @@ class Scene extends ThreeManager {
 			y: targetY,
 			duration: 2,
 			ease: 'power1.inOut',
-			onComplete: () => (this.isReady.value = true)
+			onUpdate: () => {
+				// Update scene progress
+				this.updateProgress();
+			},
+			onComplete: () => {
+				// Set ready state
+				this.isReady.value = true;
+			}
 		});
+	}
+
+	updateProgress() {
+		if (this.camera.position.y >= 0) {
+			return;
+		}
+
+		// Update scene's progress
+		this.progress.value = (this.camera.position.y / -this.config.dimensions.depth) * 100;
 	}
 }
 

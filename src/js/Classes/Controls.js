@@ -9,7 +9,7 @@ class Controls {
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
 		this.maxScroll = 5;
-		this.minScroll = -Scene.config.dimensions.height;
+		this.minScroll = -Scene.config.dimensions.depth;
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
@@ -33,7 +33,7 @@ class Controls {
 	}
 
 	handleWheel(event) {
-		if (!Scene.isReady.value) {
+		if (!Scene.isReady.value || this.camera.position.y <= this.minScroll) {
 			return;
 		}
 
@@ -42,10 +42,17 @@ class Controls {
 
 		// Attach camera y-axis to scroll
 		const delta = Math.sign(event.deltaY);
-		this.camera.position.y += delta * 0.05;
 
-		// Clamp the camera position between border values
-		this.camera.position.y = Math.max(this.minScroll, Math.min(this.maxScroll, this.camera.position.y));
+		// Check if scrolling would exceed the limits
+		const newY = this.camera.position.y + delta * 0.05;
+
+		// Apply the scroll change only if it's within bounds
+		if (newY >= this.minScroll && newY <= this.maxScroll) {
+			this.camera.position.y = newY;
+		}
+
+		// Update scene progress
+		Scene.updateProgress();
 	}
 
 	update() {

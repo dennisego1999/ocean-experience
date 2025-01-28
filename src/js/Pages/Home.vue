@@ -2,7 +2,8 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Scene from '@js/Classes/Scene.js';
 import Loader from '@js/Components/Loader.vue';
-import PrimaryButton from '../Components/PrimaryButton.vue';
+import PrimaryButton from '@js/Components/PrimaryButton.vue';
+import ProgressBar from '@js/Components/ProgressBar.vue';
 
 // Set variables
 const isLoaderVisible = ref(true);
@@ -37,7 +38,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="flex h-[100dvh] w-screen items-stretch justify-center">
+	<div class="relative flex h-[100dvh] w-screen items-stretch justify-center">
+		<Transition name="fade" mode="out-in">
+			<ProgressBar
+				v-if="Scene.isReady.value"
+				class="absolute right-4 top-1/2 z-10 -translate-y-1/2"
+				:progress="Scene.progress.value"
+				:vertical="true"
+			/>
+		</Transition>
+
 		<Transition name="fade" mode="out-in">
 			<Loader v-if="isLoaderVisible" @close="closeLoader" />
 		</Transition>
