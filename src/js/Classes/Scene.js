@@ -35,7 +35,6 @@ class Scene extends ThreeManager {
 		this.boat = null;
 		this.oceanSurfaceMaterial = null;
 		this.underwaterMaterial = null;
-		this.textureFlare0 = null;
 		this.textureFlareParticle = null;
 
 		// Configuration for ocean, sky, and underwater visuals
@@ -158,7 +157,7 @@ class Scene extends ThreeManager {
 		const light = new AmbientLight(0xffffff, 4);
 		this.scene.add(light);
 
-		this.textureFlare0 = this.textureLoader.load('/assets/images/lensflare/lensflare-sun.png');
+		// Load texture
 		this.textureFlareParticle = this.textureLoader.load('/assets/images/lensflare/lensflare-particle.png');
 
 		// Set sun position
