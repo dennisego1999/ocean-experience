@@ -8,8 +8,8 @@ class Controls {
 		this.domElement = domElement || document.body;
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
-		this.maxScroll = 3;
-		this.minScroll = -Scene.config.dimensions.depth;
+		this.maxScroll = 1.5;
+		this.minScroll = -Scene.config.dimensions.underwater.depth;
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);

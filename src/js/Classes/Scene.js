@@ -3,15 +3,18 @@ import { gsap } from 'gsap';
 import { Lensflare, LensflareElement } from 'three/addons';
 import {
 	AmbientLight,
+	BackSide,
 	BoxGeometry,
 	Color,
 	DirectionalLight,
 	DoubleSide,
 	EquirectangularReflectionMapping,
 	Mesh,
+	MeshBasicMaterial,
 	PlaneGeometry,
 	PointLight,
 	ShaderMaterial,
+	SphereGeometry,
 	Uniform,
 	Vector2
 } from 'three';
@@ -47,9 +50,15 @@ class Scene extends ThreeManager {
 			fogColor: '#ffffff',
 			foamColor: '#ffffff',
 			dimensions: {
-				height: 80,
-				width: 1000,
-				depth: 100
+				surface: {
+					height: 1000,
+					width: 1000
+				},
+				underwater: {
+					height: 80,
+					width: 1000,
+					depth: 50
+				}
 			},
 			skyEXRPath: '/assets/images/sky/sky.exr'
 		};
@@ -152,15 +161,15 @@ class Scene extends ThreeManager {
 		this.textureFlare3 = this.textureLoader.load('/assets/images/lensflare/lensflare-particle.png');
 
 		// Add directional light
-		const dirLight = new DirectionalLight(0xffffff, 0.6);
+		const dirLight = new DirectionalLight(new Color('white'), 1);
 		dirLight.position.set(1.5, 2, -10).normalize();
 		this.scene.add(dirLight);
 
 		// Add point light with lens flares
-		this.addPointLight(new Color('white'), 3, 4.5, 10, true);
+		this.addPointLight(4.2, 1.9, 10, new Color('white'), true);
 	}
 
-	addPointLight(color, x, y, z, addLensFlare = false) {
+	addPointLight(x, y, z, color, addLensFlare = false) {
 		const light = new PointLight(color, 0.4, 2000, 0);
 		light.position.set(x, y, z);
 		this.scene.add(light);
@@ -170,11 +179,11 @@ class Scene extends ThreeManager {
 		}
 
 		const lensFlare = new Lensflare();
-		lensFlare.addElement(new LensflareElement(this.textureFlare0, 400, 0, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 60, 0.6));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 0.7));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 120, 0.9));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 1));
+		lensFlare.addElement(new LensflareElement(this.textureFlare0, 500, 0.6, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 60, 0.6, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 0.7, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 120, 0.9, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 1, light.color));
 		light.add(lensFlare);
 	}
 
@@ -304,8 +313,8 @@ class Scene extends ThreeManager {
 
 		// Create ocean geometry
 		const oceanSurfaceGeometry = new PlaneGeometry(
-			this.config.dimensions.width,
-			this.config.dimensions.depth,
+			this.config.dimensions.surface.width,
+			this.config.dimensions.surface.height,
 			1024,
 			1024
 		);
@@ -366,13 +375,13 @@ class Scene extends ThreeManager {
 
 		// Create a large box geometry to encompass the underwater area
 		const underwaterBoxGeometry = new BoxGeometry(
-			this.config.dimensions.width,
-			this.config.dimensions.height,
-			this.config.dimensions.depth
+			this.config.dimensions.underwater.width,
+			this.config.dimensions.underwater.height,
+			this.config.dimensions.underwater.depth
 		);
 
 		// Position underwater box
-		underwaterBoxGeometry.translate(0, -this.config.dimensions.height / 2, 0);
+		underwaterBoxGeometry.translate(0, -this.config.dimensions.underwater.height / 2, 0);
 
 		// Create a mesh with the underwater box geometry and material
 		const underwaterBox = new Mesh(underwaterBoxGeometry, this.underwaterMaterial);
@@ -387,8 +396,20 @@ class Scene extends ThreeManager {
 			// Set texture mapping
 			texture.mapping = EquirectangularReflectionMapping;
 
-			// Set scene background
-			this.scene.background = texture;
+			// Create a sphere geometry and apply the texture to it
+			const geometry = new SphereGeometry(500, 50, 50);
+			const material = new MeshBasicMaterial({
+				map: texture,
+				side: BackSide // Render the inside of the sphere
+			});
+
+			const skyMesh = new Mesh(geometry, material);
+
+			// Rotate the mesh to adjust the sun's position
+			skyMesh.rotation.y = Math.PI * 1.37;
+
+			// Add the sky mesh to the scene
+			this.scene.add(skyMesh);
 		});
 	}
 
@@ -494,7 +515,7 @@ class Scene extends ThreeManager {
 		}
 
 		// Update scene's progress
-		this.progress.value = (this.camera.position.y / -this.config.dimensions.depth) * 100;
+		this.progress.value = (this.camera.position.y / -this.config.dimensions.underwater.depth) * 100;
 	}
 }
 
