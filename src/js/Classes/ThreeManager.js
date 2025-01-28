@@ -59,6 +59,7 @@ export default class ThreeManager {
 
 		// Set size & aspect ratio
 		this.renderer.toneMapping = ACESFilmicToneMapping;
+		this.renderer.toneMappingExposure = 0.3;
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = PCFSoftShadowMap;
 

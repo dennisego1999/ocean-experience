@@ -16,7 +16,8 @@ import {
 	ShaderMaterial,
 	SphereGeometry,
 	Uniform,
-	Vector2
+	Vector2,
+	Vector3
 } from 'three';
 import ThreeManager from '@js/Classes/ThreeManager.js';
 import oceanVertexShader from '@shaders/OceanSurface/Vertex.glsl';
@@ -35,7 +36,7 @@ class Scene extends ThreeManager {
 		this.oceanSurfaceMaterial = null;
 		this.underwaterMaterial = null;
 		this.textureFlare0 = null;
-		this.textureFlare3 = null;
+		this.textureFlareParticle = null;
 
 		// Configuration for ocean, sky, and underwater visuals
 		this.config = {
@@ -154,19 +155,22 @@ class Scene extends ThreeManager {
 
 	addPointLights() {
 		// Add ambient light
-		const light = new AmbientLight(0xffffff);
+		const light = new AmbientLight(0xffffff, 4);
 		this.scene.add(light);
 
 		this.textureFlare0 = this.textureLoader.load('/assets/images/lensflare/lensflare-sun.png');
-		this.textureFlare3 = this.textureLoader.load('/assets/images/lensflare/lensflare-particle.png');
+		this.textureFlareParticle = this.textureLoader.load('/assets/images/lensflare/lensflare-particle.png');
+
+		// Set sun position
+		const sunPosition = new Vector3(-17, 1.5, 100);
 
 		// Add directional light
-		const dirLight = new DirectionalLight(new Color('white'), 1);
-		dirLight.position.set(1.5, 2, -10).normalize();
+		const dirLight = new DirectionalLight(new Color('white'), 10);
+		dirLight.position.copy(sunPosition).normalize();
 		this.scene.add(dirLight);
 
 		// Add point light with lens flares
-		this.addPointLight(4.2, 1.9, 10, new Color('white'), true);
+		this.addPointLight(sunPosition.x, sunPosition.y, sunPosition.z, new Color('white'), true);
 	}
 
 	addPointLight(x, y, z, color, addLensFlare = false) {
@@ -179,11 +183,11 @@ class Scene extends ThreeManager {
 		}
 
 		const lensFlare = new Lensflare();
-		lensFlare.addElement(new LensflareElement(this.textureFlare0, 500, 0.6, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 60, 0.6, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 0.7, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 120, 0.9, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlare3, 70, 1, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 120, 0, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 100, 0.4, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 90, 0.6, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 80, 0.8, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 70, 1, light.color));
 		light.add(lensFlare);
 	}
 
@@ -397,16 +401,17 @@ class Scene extends ThreeManager {
 			texture.mapping = EquirectangularReflectionMapping;
 
 			// Create a sphere geometry and apply the texture to it
-			const geometry = new SphereGeometry(500, 50, 50);
+			const geometry = new SphereGeometry(800, 100, 100);
 			const material = new MeshBasicMaterial({
 				map: texture,
 				side: BackSide // Render the inside of the sphere
 			});
 
+			// Create mesh
 			const skyMesh = new Mesh(geometry, material);
 
 			// Rotate the mesh to adjust the sun's position
-			skyMesh.rotation.y = Math.PI * 1.37;
+			skyMesh.rotation.y = Math.PI * 1.25;
 
 			// Add the sky mesh to the scene
 			this.scene.add(skyMesh);
