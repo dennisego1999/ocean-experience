@@ -5,10 +5,13 @@ import {
 	AmbientLight,
 	BackSide,
 	BoxGeometry,
+	ClampToEdgeWrapping,
 	Color,
 	DirectionalLight,
 	DoubleSide,
 	EquirectangularReflectionMapping,
+	LinearFilter,
+	LinearMipMapLinearFilter,
 	Mesh,
 	MeshBasicMaterial,
 	PlaneGeometry,
@@ -51,13 +54,13 @@ class Scene extends ThreeManager {
 			foamColor: '#ffffff',
 			dimensions: {
 				surface: {
-					height: 500,
-					width: 1000
+					height: 350,
+					width: 500
 				},
 				underwater: {
 					height: 40, // Depth of the ocean
-					width: 500,
-					depth: 500
+					width: 350,
+					depth: 200
 				}
 			},
 			skyEXRPath: '/assets/images/sky/sky.exr'
@@ -73,8 +76,10 @@ class Scene extends ThreeManager {
 
 		// Set render action
 		this.setRenderAction(() => {
-			// Update the uniforms
-			this.oceanSurfaceMaterial.uniforms.uTime.value = this.clock.getElapsedTime();
+			if (this.oceanSurfaceMaterial) {
+				// Update the uniforms
+				this.oceanSurfaceMaterial.uniforms.uTime.value = this.clock.getElapsedTime();
+			}
 
 			// Update the boat's position and rotation
 			if (this.boat) {
@@ -138,8 +143,8 @@ class Scene extends ThreeManager {
 
 			// Update model
 			this.boat.scale.set(5, 5, 5);
-			this.boat.rotation.set(0, Math.PI * 0.7, 0);
-			this.boat.position.set(0, -0.3, 0);
+			this.boat.rotation.set(0, Math.PI * 0.73, 0);
+			this.boat.position.set(0, -0.35, 0);
 
 			// Add to scene
 			this.scene.add(this.boat);
@@ -159,13 +164,17 @@ class Scene extends ThreeManager {
 
 		// Load texture
 		this.textureFlareParticle = this.textureLoader.load('/assets/images/lensflare/lensflare-particle.png');
+		this.textureFlareParticle.minFilter = LinearMipMapLinearFilter;
+		this.textureFlareParticle.magFilter = LinearFilter;
+		this.textureFlareParticle.wrapS = ClampToEdgeWrapping;
+		this.textureFlareParticle.wrapT = ClampToEdgeWrapping;
 
 		// Set sun position
 		const sunPosition = new Vector3(-17, 1.5, 100);
 
 		// Add directional light
-		const dirLight = new DirectionalLight(new Color('white'), 10);
-		dirLight.position.copy(sunPosition).normalize();
+		const dirLight = new DirectionalLight(new Color('orange'), 10);
+		dirLight.position.set(0, 1, -10);
 		this.scene.add(dirLight);
 
 		// Add point light with lens flares
@@ -173,7 +182,7 @@ class Scene extends ThreeManager {
 	}
 
 	addPointLight(x, y, z, color, addLensFlare = false) {
-		const light = new PointLight(color, 0.4, 2000, 0);
+		const light = new PointLight();
 		light.position.set(x, y, z);
 		this.scene.add(light);
 
@@ -182,7 +191,7 @@ class Scene extends ThreeManager {
 		}
 
 		const lensFlare = new Lensflare();
-		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 120, 0, light.color));
+		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 120, 0.2, light.color));
 		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 100, 0.4, light.color));
 		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 90, 0.6, light.color));
 		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 80, 0.8, light.color));
@@ -454,6 +463,10 @@ class Scene extends ThreeManager {
 	}
 
 	getWaveElevation(x, z) {
+		if (!this.oceanSurfaceMaterial) {
+			return 0;
+		}
+
 		const uTime = this.oceanSurfaceMaterial.uniforms.uTime.value;
 
 		// Big waves
