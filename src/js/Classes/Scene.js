@@ -154,7 +154,7 @@ class Scene extends ThreeManager {
 
 	addPointLights() {
 		// Add ambient light
-		const light = new AmbientLight(0xffffff, 4);
+		const light = new AmbientLight(0xffffff, 7);
 		this.scene.add(light);
 
 		// Load texture
