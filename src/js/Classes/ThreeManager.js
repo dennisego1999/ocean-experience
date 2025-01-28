@@ -16,7 +16,6 @@ import {
 	WebGLRenderer
 } from 'three';
 import Controls from '@js/Classes/Controls.js';
-import { mix } from 'three/tsl';
 
 export default class ThreeManager {
 	constructor() {
