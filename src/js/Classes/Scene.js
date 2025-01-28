@@ -107,7 +107,7 @@ class Scene extends ThreeManager {
 
 	setupScene() {
 		// Add lights
-		this.addPointLights();
+		this.addLighting();
 
 		// Set up the scene
 		this.addModels();
@@ -157,7 +157,7 @@ class Scene extends ThreeManager {
 		this.addUnderwaterBox();
 	}
 
-	addPointLights() {
+	addLighting() {
 		// Add ambient light
 		const light = new AmbientLight(0xffffff, 7);
 		this.scene.add(light);
@@ -169,34 +169,10 @@ class Scene extends ThreeManager {
 		this.textureFlareParticle.wrapS = ClampToEdgeWrapping;
 		this.textureFlareParticle.wrapT = ClampToEdgeWrapping;
 
-		// Set sun position
-		const sunPosition = new Vector3(-17, 1.5, 100);
-
 		// Add directional light
 		const dirLight = new DirectionalLight(new Color('orange'), 10);
 		dirLight.position.set(0, 1, -10);
 		this.scene.add(dirLight);
-
-		// Add point light with lens flares
-		this.addPointLight(sunPosition.x, sunPosition.y, sunPosition.z, new Color('white'), true);
-	}
-
-	addPointLight(x, y, z, color, addLensFlare = false) {
-		const light = new PointLight();
-		light.position.set(x, y, z);
-		this.scene.add(light);
-
-		if (!addLensFlare) {
-			return;
-		}
-
-		const lensFlare = new Lensflare();
-		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 120, 0.2, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 100, 0.4, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 90, 0.6, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 80, 0.8, light.color));
-		lensFlare.addElement(new LensflareElement(this.textureFlareParticle, 70, 1, light.color));
-		light.add(lensFlare);
 	}
 
 	addOceanSurface() {
