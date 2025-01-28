@@ -51,13 +51,13 @@ class Scene extends ThreeManager {
 			foamColor: '#ffffff',
 			dimensions: {
 				surface: {
-					height: 1000,
+					height: 500,
 					width: 1000
 				},
 				underwater: {
-					height: 80,
-					width: 1000,
-					depth: 50
+					height: 40, // Depth of the ocean
+					width: 500,
+					depth: 500
 				}
 			},
 			skyEXRPath: '/assets/images/sky/sky.exr'
@@ -515,7 +515,7 @@ class Scene extends ThreeManager {
 		}
 
 		// Update scene's progress
-		this.progress.value = (this.camera.position.y / -this.config.dimensions.underwater.depth) * 100;
+		this.progress.value = (this.camera.position.y / -this.config.dimensions.underwater.height) * 100;
 	}
 }
 

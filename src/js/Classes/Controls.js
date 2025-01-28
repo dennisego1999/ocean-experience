@@ -9,7 +9,7 @@ class Controls {
 		this.currentMouseCoords = new Vector2();
 		this.targetMouseCoords = new Vector2();
 		this.maxScroll = 1.5;
-		this.minScroll = -Scene.config.dimensions.underwater.depth;
+		this.minScroll = -Scene.config.dimensions.underwater.height;
 
 		// Bind context
 		this.handlePointerMove = this.handlePointerMove.bind(this);
