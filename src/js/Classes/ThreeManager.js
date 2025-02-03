@@ -1,6 +1,6 @@
 import { GUI } from 'dat.gui';
 import { ref } from 'vue';
-import { EXRLoader } from 'three/addons';
+import { BokehPass, EffectComposer, EXRLoader, OutputPass, RenderPass, SMAAPass } from 'three/addons';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import {
@@ -25,6 +25,7 @@ export default class ThreeManager {
 		this.canvas = null;
 		this.controls = null;
 		this.renderAction = null;
+		this.composer = null;
 		this.animationMixers = [];
 		this.gui = null;
 		this.debugObject = {};
@@ -47,7 +48,6 @@ export default class ThreeManager {
 
 		// Setup renderer
 		this.renderer = new WebGLRenderer({
-			antialias: true,
 			canvas: this.canvas,
 			powerPreference: 'high-performance',
 			alpha: true
@@ -62,11 +62,17 @@ export default class ThreeManager {
 		// Set pixel ratio
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
+		// Set size
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+
 		// Setup camera
 		this.setupCamera();
 
 		// Setup controls
 		this.setupControls();
+
+		// Setup postprocessing
+		this.setupPostProcessing();
 
 		// Setup debugging
 		this.setupDebugging();
@@ -93,6 +99,31 @@ export default class ThreeManager {
 
 		// Add camera to scene
 		this.scene.add(this.camera);
+	}
+
+	setupPostProcessing() {
+		// Create composer
+		this.composer = new EffectComposer(this.renderer);
+		this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+		// Add bokeh
+		const bokehPass = new BokehPass(this.scene, this.camera, {
+			focus: 1,
+			aperture: 0.0001,
+			maxblur: 0.01
+		});
+		this.composer.addPass(bokehPass);
+
+		// Add SMAA
+		const smaaPass = new SMAAPass(
+			window.innerWidth * this.renderer.getPixelRatio(),
+			window.innerHeight * this.renderer.getPixelRatio()
+		);
+		this.composer.addPass(smaaPass);
+
+		// Add output
+		const outputPass = new OutputPass();
+		this.composer.addPass(outputPass);
 	}
 
 	setupControls() {
@@ -192,7 +223,7 @@ export default class ThreeManager {
 		}
 
 		// Render
-		this.renderer.render(this.scene, this.camera);
+		this.composer.render();
 	}
 
 	destroy() {
